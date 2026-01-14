@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cat Swipe App</title>
+</head>
+<body>
+
+<h2>Swipe Cats 🐱</h2>
+<img id="catImage" width="300"/>
+
+<script>
+let cats = [];
+let index = 0;
+let startX = 0;
+
+fetch("/api/cats")
+  .then(res => res.json())
+  .then(data => {
+    cats = data;
+    showCat();
+  });
+
+function showCat() {
+  document.getElementById("catImage").src = cats[index];
+}
+
+document.addEventListener("touchstart", e => {
+  startX = e.touches[0].clientX;
+});
+
+document.addEventListener("touchend", e => {
+  let endX = e.changedTouches[0].clientX;
+  let direction = endX > startX ? "right" : "left";
+  swipe(direction);
+});
+
+function swipe(direction) {
+  fetch("/api/swipe", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({direction})
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.done) {
+      document.body.innerHTML = `
+        <h2>You liked ${data.likes} cats ❤️</h2>
+        ${data.liked_images.map(img => `<img src="${img}" width="150"/>`).join("")}
+      `;
+    } else {
+      index++;
+      showCat();
+    }
+  });
+}
+</script>
+
+</body>
+</html>
