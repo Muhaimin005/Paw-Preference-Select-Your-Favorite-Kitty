@@ -1,60 +1,39 @@
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  text-align: center;
-  min-height: 100vh;
-  background: linear-gradient(180deg, #f6f7fb, #eaeaf1);
-  margin: 0;
-  display: flex;
-  justify-content: center;
-  padding: 16px;
-  align-items: center;
-}
-
-.container {
-  max-width: 400px;
-  margin: auto;
-  padding: 20px;
-}
-
-img {
-  width: 100%;
-  max-height: 70vh;
-  object-fit: contain;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-}
-
-#hint {
-  color: #777;
-}
-
 * {
   box-sizing: border-box;
 }
 
-.app {
-  width: 100%;
-  max-width: 420px;
-  text-align: center;
-}
-
-.app-wrapper {
-  width: 100%;
-  max-width: 420px;
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  min-height: 100vh;
+  margin: 0;
+  background: linear-gradient(180deg, #f6f7fb, #eaeaf1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 16px;
 }
 
+/* ---------- APP WRAPPER ---------- */
+
+.app {
+  width: 100%;
+  max-width: 440px;   
+  text-align: center;
+}
+
+/* ---------- CARD ---------- */
+
 .card {
   width: 100%;
-  aspect-ratio: 3 / 4;   /* fixed shape */
+  aspect-ratio: 4 / 5;   
   background: white;
-  border-radius: 16px;
+  border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.12);
   display: flex;
   align-items: center;
   justify-content: center;
-  touch-action: none;   /* 🔑 disables browser swipe */
+  touch-action: none;
   cursor: grab;
 }
 
@@ -69,10 +48,13 @@ img {
 .card img {
   width: 100%;
   height: 100%;
-  object-fit: cover;  /* 🔑 key line */
+  object-fit: contain;    
+  padding: 12px;           
   user-select: none;
   pointer-events: none;
 }
+
+/* ---------- RESULTS GRID ---------- */
 
 .grid {
   display: grid;
@@ -83,67 +65,74 @@ img {
 
 .grid img {
   width: 100%;
-  aspect-ratio: 1 / 1; 
+  aspect-ratio: 1 / 1;
   object-fit: cover;
   border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
 }
 
-  #loading {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: #f7f7f7;
-    flex-direction: column;
-  }
+/* ---------- LOADING ---------- */
 
-  .spinner {
-    border: 8px solid #f3f3f3;
-    border-top: 8px solid #ff4081;
-    border-radius: 50%;
-    width: 80px;
-    height: 80px;
-    animation: spin 1s linear infinite;
-    margin-bottom: 20px;
-  }
+#loading {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f7f7f7;
+  flex-direction: column;
+  z-index: 10;
+}
 
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
+.spinner {
+  width: 80px;
+  height: 80px;
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #ff4081;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
 
-  .container {
-    display: none;
-    max-width: 400px;
-    margin: auto;
-    padding: 20px;
-  }
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 
-  .hidden {
+/* ---------- RESULTS ---------- */
+
+.hidden {
   display: none;
 }
 
 #results {
-  max-width: 420px;
-  margin: auto;
+  max-width: 440px;
   text-align: center;
 }
+
+/* ---------- BUTTON ---------- */
 
 #restartBtn {
   margin-top: 20px;
   padding: 12px 20px;
   font-size: 16px;
   border: none;
-  border-radius: 12px;
+  border-radius: 14px;
   background: #ff6b81;
   color: white;
   cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 #restartBtn:hover {
   background: #ff4757;
 }
+
+#restartBtn:active {
+  transform: scale(0.97);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* ---------- TEXT ---------- */
 
 h2 {
   margin-bottom: 12px;
@@ -153,13 +142,4 @@ h2 {
   margin-top: 12px;
   color: #666;
   font-size: 14px;
-}
-
-button {
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-button:active {
-  transform: scale(0.97);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }

@@ -1,163 +1,157 @@
 document.addEventListener("DOMContentLoaded", () => {
   let cats = [];
-let index = 0;
-let startX = 0;
-let currentX = 0;
-let isDragging = false;
+  let index = 0;
+  let startX = 0;
+  let currentX = 0;
+  let isDragging = false;
 
-const SWIPE_THRESHOLD = 50;
-const card = document.querySelector(".card");
+  const SWIPE_THRESHOLD = 50;
+  const card = document.querySelector(".card");
+  const img = document.getElementById("catImage");
 
-// Fetch all cats
-fetch("/api/cats")
-  .then(res => res.json())
-  .then(data => {
-    cats = data;
-    preloadAllImages(cats).then(() => {
-      document.getElementById("loading").style.display = "none";
-      document.querySelector(".app").style.display = "block";
-      showCat();
-    });
-  });
-
-// Preload all images
-function preloadAllImages(catList) {
-  const promises = catList.map(cat => {
-    return new Promise(resolve => {
-      const img = new Image();
-      img.src = cat.url;
-      img.onload = resolve;
-      img.onerror = resolve;
-    });
-  });
-  return Promise.all(promises);
-}
-
-// Show current cat
-function showCat() {
-  document.getElementById("catImage").src = cats[index].url;
-}
-
-document.addEventListener("touchstart", e => {
-  startX = e.touches[0].clientX;
-});
-
-
-document.addEventListener("contextmenu", e => e.preventDefault());
-
-function swipe(direction) {
-  const currentCat = cats[index];
-  // Save likes in frontend
-  if (!window.likedCats) window.likedCats = [];
-  if (direction === "right") window.likedCats.push(currentCat);
-
-  index++;
-  if (index >= cats.length) {
-    showResults();
-  } else {
-    showCat();
-  }
-}
-
-function getX(event) {
-  return event.touches ? event.touches[0].clientX : event.clientX;
-}
-
-function startDrag(e) {
-  isDragging = true;
-  startX = getX(e);
-  card.classList.remove("animate");
-  card.classList.add("dragging");
-}
-
-function onDrag(e) {
-  if (!isDragging) return;
-
-  currentX = getX(e);
-  const diff = currentX - startX;
-
-  const rotate = diff / 15;
-  card.style.transform = `translateX(${diff}px) rotate(${rotate}deg)`;
-}
-
-function endDrag() {
-  if (!isDragging) return;
-  isDragging = false;
-
-  const diff = currentX - startX;
-  card.classList.remove("dragging");
-  card.classList.add("animate");
-
-  if (Math.abs(diff) > SWIPE_THRESHOLD) {
-    swipeCard(diff > 0 ? "right" : "left");
-  } else {
-    card.style.transform = "translateX(0) rotate(0)";
-  }
-}
-
-function swipeCard(direction) {
-  const screenWidth = window.innerWidth;
-  const moveX = direction === "right" ? screenWidth : -screenWidth;
-
-  card.style.transform = `translateX(${moveX}px) rotate(${direction === "right" ? 25 : -25}deg)`;
-
-  setTimeout(() => {
-    swipe(direction);      // your existing logic
-    resetCard();
-  }, 300);
-}
-
-function resetCard() {
-  card.classList.remove("animate");
-  card.style.transform = "translateX(0) rotate(0)";
-}
-
-// Touch
-card.addEventListener("touchstart", startDrag);
-card.addEventListener("touchmove", onDrag);
-card.addEventListener("touchend", endDrag);
-
-// Mouse
-card.addEventListener("mousedown", startDrag);
-document.addEventListener("mousemove", onDrag);
-document.addEventListener("mouseup", endDrag);
-
-// Prevent image drag
-document.getElementById("catImage").addEventListener("dragstart", e => e.preventDefault());
-
-
-function showResults() {
-  document.querySelector(".app").style.display = "none";
-
-  const results = document.getElementById("results");
-  const grid = document.getElementById("likedGrid");
-  const count = document.getElementById("likeCount");
-
-  results.classList.remove("hidden");
-  count.textContent = window.likedCats.length;
-
-  grid.innerHTML = "";
-  window.likedCats.forEach(cat => {
-    const img = document.createElement("img");
-    img.src = cat.url;
-    grid.appendChild(img);
-  });
-}
-
-document.getElementById("restartBtn").addEventListener("click", restartApp);
-
-function restartApp() {
-  index = 0;
   window.likedCats = [];
 
-  document.getElementById("results").classList.add("hidden");
-  document.querySelector(".app").style.display = "block";
+  /* ---------------- FETCH & PRELOAD ---------------- */
 
-  resetCard();   // from Tinder animation
-  showCat();
-}
+  fetch("/api/cats")
+    .then(res => res.json())
+    .then(data => {
+      cats = data;
+      preloadImages(cats).then(() => {
+        document.getElementById("loading").style.display = "none";
+        document.querySelector(".app").style.display = "block";
+        showCat();
+      });
+    });
+
+  function preloadImages(list) {
+    return Promise.all(
+      list.map(cat => {
+        const i = new Image();
+        i.src = cat.url;
+        return new Promise(resolve => {
+          i.onload = resolve;
+          i.onerror = resolve;
+        });
+      })
+    );
+  }
+
+  function showCat() {
+    img.src = cats[index].url;
+  }
+
+  /* ---------------- DRAG LOGIC ---------------- */
+
+  function getX(e) {
+    return e.touches ? e.touches[0].clientX : e.clientX;
+  }
+
+  function startDrag(e) {
+    isDragging = true;
+    startX = getX(e);
+    card.classList.remove("animate");
+  }
+
+  function onDrag(e) {
+    if (!isDragging) return;
+
+    currentX = getX(e);
+    const diff = currentX - startX;
+    const rotate = diff / 15;
+
+    card.style.transform = `translateX(${diff}px) rotate(${rotate}deg)`;
+  }
+
+  function endDrag() {
+    if (!isDragging) return;
+    isDragging = false;
+
+    const diff = currentX - startX;
+    card.classList.add("animate");
+
+    if (Math.abs(diff) > SWIPE_THRESHOLD) {
+      swipeCard(diff > 0 ? "right" : "left");
+    } else {
+      resetCard();
+    }
+  }
+
+  /* ---------------- SWIPE ---------------- */
+
+  function swipeCard(direction) {
+    const moveX = direction === "right"
+      ? window.innerWidth
+      : -window.innerWidth;
+
+    card.style.transform =
+      `translateX(${moveX}px) rotate(${direction === "right" ? 25 : -25}deg)`;
+
+    setTimeout(() => {
+      handleSwipe(direction);
+      resetCard();
+    }, 300);
+  }
+
+  function handleSwipe(direction) {
+    if (direction === "right") {
+      likedCats.push(cats[index]);
+    }
+
+    index++;
+
+    if (index >= cats.length) {
+      showResults();
+    } else {
+      showCat();
+    }
+  }
+
+  function resetCard() {
+    card.classList.remove("animate");
+    card.style.transform = "translateX(0) rotate(0)";
+  }
+
+  /* ---------------- EVENTS ---------------- */
+
+  card.addEventListener("touchstart", startDrag);
+  card.addEventListener("touchmove", onDrag);
+  card.addEventListener("touchend", endDrag);
+
+  card.addEventListener("mousedown", startDrag);
+  document.addEventListener("mousemove", onDrag);
+  document.addEventListener("mouseup", endDrag);
+
+  img.addEventListener("dragstart", e => e.preventDefault());
+
+  /* ---------------- RESULTS ---------------- */
+
+  function showResults() {
+    document.querySelector(".app").style.display = "none";
+
+    const results = document.getElementById("results");
+    const grid = document.getElementById("likedGrid");
+    const count = document.getElementById("likeCount");
+
+    results.classList.remove("hidden");
+    count.textContent = likedCats.length;
+
+    grid.innerHTML = "";
+    likedCats.forEach(cat => {
+      const i = document.createElement("img");
+      i.src = cat.url;
+      grid.appendChild(i);
+    });
+  }
+
+  document.getElementById("restartBtn").addEventListener("click", () => {
+    index = 0;
+    likedCats = [];
+
+    document.getElementById("results").classList.add("hidden");
+    document.querySelector(".app").style.display = "block";
+
+    resetCard();
+    showCat();
+  });
 });
-
-
-
-
