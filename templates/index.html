@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Paw & Preference</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="app-wrapper">
+
+  <div id="loading">
+    <div class="spinner"></div>
+    <p>Loading cats...</p>
+  </div>
+
+  <div class="app">
+    <h2>Paw & Preference</h2>
+    <div class="card">
+      <img id="catImage" alt="Cat">
+    </div>
+    <p class="hint">Swipe right to like ❤️, left to skip</p>
+  </div>
+
+  <div id="results" class="hidden">
+    <h2>You liked <span id="likeCount">0</span> cats ❤️</h2>
+    <div id="likedGrid" class="grid"></div>
+    <button id="restartBtn">Restart 🔄</button>
+  </div>
+
+</div>
+
+
+<script src="/static/app.js"></script>
+</body>
+</html>
