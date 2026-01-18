@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ---------------- FETCH & PRELOAD ---------------- */
 
- const API_BASE = "https://app.py.onrender.com";
+ const API_BASE = "https://paw-preference-select-your-favorite-kitty.onrender.com/";
 
 fetch(`${API_BASE}/api/cats`)
     .then(res => res.json())
