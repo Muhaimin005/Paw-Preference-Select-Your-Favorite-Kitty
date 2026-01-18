@@ -13,7 +13,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ---------------- FETCH & PRELOAD ---------------- */
 
-  fetch("/api/cats")
+ const API_BASE = "https://your-flask-api.onrender.com";
+
+fetch(`${API_BASE}/api/cats`)
     .then(res => res.json())
     .then(data => {
       cats = data;

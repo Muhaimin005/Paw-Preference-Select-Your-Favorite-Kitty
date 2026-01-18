@@ -13,12 +13,6 @@ cats = []
 liked_cats = []
 current_index = 0
 
-
-@app.route("/")
-def home():
-    return render_template("index.html")
-
-
 @app.route("/api/cats")
 def get_cats():
     # Build full URLs from IDs
